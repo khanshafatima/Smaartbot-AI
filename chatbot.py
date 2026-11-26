@@ -11,6 +11,14 @@ st.set_page_config(
 st.title("🤖 SmartBot AI")
 st.caption("Your Personal AI Assistant")
 
+# Connect to Ollama Cloud
+client = ollama.Client(
+    host="https://ollama.com",
+    headers={
+        "Authorization": "Bearer " + st.secrets["OLLAMA_API_KEY"]
+    }
+)
+
 # Initialize chat history
 if "messages" not in st.session_state:
     st.session_state.messages = []
@@ -29,8 +37,6 @@ for message in st.session_state.messages:
 question = st.chat_input("Ask me anything...")
 
 if question:
-
-    # Display user message
     st.session_state.messages.append(
         {"role": "user", "content": question}
     )
@@ -38,19 +44,22 @@ if question:
     with st.chat_message("user"):
         st.write(question)
 
-    # Generate AI response
     with st.chat_message("assistant"):
         with st.spinner("SmartBot is thinking..."):
+            try:
+                response = client.chat(
+                    model="gemma4:31b",
+                    messages=st.session_state.messages
+                )
 
-            response = ollama.chat(
-                model="llama3.2:1b",
-                messages=st.session_state.messages
-            )
+                answer = response["message"]["content"]
+                st.write(answer)
 
-            answer = response["message"]["content"]
-            st.write(answer)
+                st.session_state.messages.append(
+                    {"role": "assistant", "content": answer}
+                )
 
-    # Save AI response
-    st.session_state.messages.append(
-        {"role": "assistant", "content": answer}
-    )
+            except Exception:
+                st.error(
+                    "Sorry! AI connection failed. Please try again."
+                )
