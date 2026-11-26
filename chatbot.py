@@ -59,6 +59,6 @@ if question:
                     {"role": "assistant", "content": answer}
                 )
 
-            except Exception as e:
-    st.error(f"Error: {type(e).__name__}")
-    st.code(str(e))
+                      except Exception as e:
+               st.error(f"Error: {type(e).__name__}")
+               st.code(str(e))
