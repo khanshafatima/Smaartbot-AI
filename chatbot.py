@@ -59,7 +59,6 @@ if question:
                     {"role": "assistant", "content": answer}
                 )
 
-            except Exception:
-                st.error(
-                    "Sorry! AI connection failed. Please try again."
-                )
+            except Exception as e:
+    st.error(f"Error: {type(e).__name__}")
+    st.code(str(e))
